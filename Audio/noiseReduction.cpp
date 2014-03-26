@@ -1,5 +1,5 @@
 #include "noiseReduction.h"
-#include "window.h"
+#include "localizationGlobalization.h"
 
 #include <stdio.h> 
 #include <stdlib.h>
@@ -28,13 +28,14 @@ void compute_noise_reduction(short *data,int count, int channels , window * loc 
 	return;
 }
 
+/** Compare function fo qsort **/
 int cmpfunc (const void * a, const void * b)
 {
    return ( *(short*)b - *(short*)a );
 }
 
 
-/** Media Filter **/
+/** Median Filter **/
 void medianfilter(short *data, int count, int channels , window * loc ,  int & nr_loc)
 {
    printf ("\t\t median_filter begin\n");
@@ -57,8 +58,6 @@ void medianfilter(short *data, int count, int channels , window * loc ,  int & n
 	   short max = (short)aux[size];
 	   short min = (short)aux[size*7];
 	   
-	   
-
 	   //printf("\nWindow: %i, Size: %i, Min: %i, Max: %i\n", i, size, min, max);
 
 	   for(int j = loc[i].begin; j < loc[i].end; j++){
@@ -73,6 +72,6 @@ void medianfilter(short *data, int count, int channels , window * loc ,  int & n
 
    
 
-   printf ("\t\t end median_filter begin\n");
+   printf ("\t\t median_filter end\n");
    return;
 }

@@ -1,8 +1,9 @@
 #include "localizationGlobalization.h"
 
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
+#include <math.h>
+#include <float.h>
 
 
 
@@ -61,45 +62,46 @@ void compute_mean_stdev(short *data ,int count , double *mean , double *st_dev)
 /*	Grow window size	*/
 void grow_w(window &w  , int count , bool &g)
 {
- if (w.begin == 0 )
-  {
-   if (w.end+2 <=count)
-    {
-     w.end += 2;
-     g = true;
-     return;
-    }
-   else
-   {
-    g= false;
-    return;
-   }
-   
-  }
+	if (w.begin == 0 )
+		{
+			if (w.end+2 <=count)
+				{
+					w.end += 2;
+					g = true;
+					return;
+				}
+			else
+			{
+				g= false;
+				return;
+			}
+			
+		}
 
- if (w.end == count)
-  {
-   if (w.begin-2 >= 0)
-    {
-     w.begin -= 2;
-     g = true;
-     return;
-    }
-   else
-    {
-     g=false;
-     return;
-    }
-  }
+	if (w.end == count)
+		{
+			if (w.begin-2 >= 0)
+				{
+					w.begin -= 2;
+					g = true;
+					return;
+				}
+			else
+				{
+					g=false;
+					return;
+				}
+		}
 
- if (w.begin > 0 && w.end < count)
- {
-  w.begin --;
-  w.end ++;
-  g = true;
-  return;
- }
+	if (w.begin > 0 && w.end < count)
+	{
+		w.begin --;
+		w.end ++;
+		g = true;
+		return;
+	}
 
+	
 }
 
 
@@ -130,6 +132,7 @@ void search_for_s_in_loc(short *data ,int s , window * loc ,int nr_loc , window 
 			{
 				rezult[c] = loc[w];
 				c++;
+				break;
 			}
 		}
 	}
@@ -151,10 +154,6 @@ void compute_localization (short *data,int count, int channels , double * mean ,
 	/* Verificare compute_mean_stdev */
 	/*for (int i = 0 ; i < count ; i++) 
 		printf (" data - %d  mean -%d stdev %d \n" , data[i] ,mean[i] , st_dev[i]);*/
-
-	/*
-	for (int i = 0 ; i < count ; i++) 
-		printf (" data - %d \n" , data[i]);*/
 
 	window w_prev = {};
 	window w_current = {};
@@ -185,9 +184,10 @@ void compute_localization (short *data,int count, int channels , double * mean ,
 				w_prev.sd    * log( (double)(w_prev.end    - w_prev.begin))     )
 			{
 				//print_w (w_current);
+				
 				loc[contor] = w_current;//save current win
-				w_prev = w_current;		
 				contor++;
+				w_prev = w_current;		
 				break;
 			}
 		}
@@ -202,7 +202,7 @@ void compute_localization (short *data,int count, int channels , double * mean ,
 } /* compute_localization */
 
 /*	Compute localization windows for given data	*/
-void compute_globalization (short *data,int count, int channels, window * loc , int & nr_loc, window * glob , int & nr_glob)
+void compute_globalization (short *data,int count, int channels, window * loc , int & nr_loc, window * glob , int & nr_glob)//Major design algoritm fail
 {
 	printf ("\t\t compute_globalization begin\n");
 
@@ -211,50 +211,63 @@ void compute_globalization (short *data,int count, int channels, window * loc , 
 	int cl;
 	l = 	(window *)malloc (nr_loc * sizeof(window) );
 
-	window * list;
+	window * list1;
 	int c1;
-	list = 	(window *)malloc (nr_loc * sizeof(window) );
+	list1 = 	(window *)malloc (nr_loc * sizeof(window) );
 
 	window * list2;
 	int c2;
 	list2 = 	(window *)malloc (nr_loc * sizeof(window) );
 
-	for (int s = 0 ; s < count ; s++)
+	window max_w;
+	int contor;
+
+	for (int s = 0 ; s < count ; s++)//data
 	{
-		search_for_s_in_loc(data ,s ,loc ,nr_loc ,list , c1);
-		for (int ss = 0 ; ss < count ; ss++)
+		search_for_s_in_loc(data ,s ,loc ,nr_loc ,list1 , c1);
+		for (int ss = 0 ; ss < count ; ss++)//data
 		{
 			search_for_s_in_loc(data ,ss ,loc ,nr_loc ,list2 , c2);
 
-			int contor= 0;
-			for (int o = 0 ; o <c1; o++  ) //list
-				for (int p = 0 ; p <c2 ; p++) //list 2
+			contor= 0;
+			for (int o = 0 ; o <c1; o++  ) //list1
+				for (int p = 0 ; p <c2 ; p++) //list2
 				{
-					if (list[o].begin == list2[p].begin && list[o].end == list2[p].end)
+					if (list1[o].begin == list2[p].begin && list1[o].end == list2[p].end)
 					{
-						l[contor] = list[o];
+						l[contor] = list1[o];
 						contor++;
 					}
 				}
 
-			int max = INT_MIN;
-			window max_w;
-			for (int x = 0 ; x <contor; x++  ) //l
-			{
+		//printf ("ss: %i ",ss);
 				
-				if (max > l[x].sd)
-				{
-					max = l[x].sd;
-					max_w = l[x];
-				}
 
-				glob[s] = max_w;
+		}//ss for
+
+		double max = DBL_MIN; //max for window sd
+			
+		for (int x = 0 ; x <contor; x++  ) //l
+		{
+				
+			if (max < l[x].sd)
+			{
+				max = l[x].sd;
+				max_w = l[x];  //TO DO initializare max_w
 			}
+								
 		}
-
 		free(l);
+			
+		glob[s] = max_w;
+
+		printf(" pt indice %i  ", s);
+		print_w(glob[s]);
+
+		
 	}
 
 	printf ("\t\t compute_globalization end\n");
 	return;
 }
+
