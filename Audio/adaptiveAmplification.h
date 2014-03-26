@@ -1,6 +1,6 @@
 // adaptiveAmplification.cpp
 
-#include "window.h"
+#include "localizationGlobalization.h"
 
 
 /*	Compute adaptive amplification for given data	*/

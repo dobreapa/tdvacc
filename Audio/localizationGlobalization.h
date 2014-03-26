@@ -1,6 +1,15 @@
 //  localizationGlobalization.cpp
 
-#include "window.h"
+#ifndef WINDOW_H
+#define WINDOW_H	
+struct window {
+	int begin;
+	int end;
+	double sd;
+	double m;
+};
+
+#endif
 
 
 /*	 Compute standard deviation and mean for given window	*/

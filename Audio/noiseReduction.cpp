@@ -1,5 +1,5 @@
 #include "noiseReduction.h"
-#include "window.h"
+#include "localizationGlobalization.h"
 
 #include <stdio.h> 
 #include <stdlib.h>
@@ -34,7 +34,7 @@ int cmpfunc (const void * a, const void * b)
 }
 
 
-/** Media Filter **/
+/** Median Filter **/
 void medianfilter(short *data, int count, int channels , window * loc ,  int & nr_loc)
 {
    printf ("\t\t median_filter begin\n");

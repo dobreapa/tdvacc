@@ -1,6 +1,6 @@
 // noiseReduction.cpp
 
-#include "window.h"
+#include "localizationGlobalization.h"
 
 /*	Compute noise reduction for given data	*/
 void compute_noise_reduction(short *data,int count, int channels , window * loc ,  int & nr_loc);

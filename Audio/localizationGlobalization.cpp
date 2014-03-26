@@ -1,6 +1,7 @@
 #include "localizationGlobalization.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 
@@ -117,7 +118,7 @@ window create_window_from_seed (int seed)
 
 
 /*	Search for signal s in localization windows	*/
-void search_for_s_in_loc(short *data ,int s , window * loc ,int nr_loc , window * rezult , int &contor)
+void search_for_s_in_loc(short *data ,int s , window * loc ,int nr_loc , window * rezult , int &nr_rez)
 {
 	int c = 0;
 
@@ -133,7 +134,7 @@ void search_for_s_in_loc(short *data ,int s , window * loc ,int nr_loc , window 
 		}
 	}
 
-	contor = c;
+	nr_rez = c;
 }
 
 
@@ -210,9 +211,9 @@ void compute_globalization (short *data,int count, int channels, window * loc , 
 	int cl;
 	l = 	(window *)malloc (nr_loc * sizeof(window) );
 
-	window * list;
+	window * list1;
 	int c1;
-	list = 	(window *)malloc (nr_loc * sizeof(window) );
+	list1 = 	(window *)malloc (nr_loc * sizeof(window) );
 
 	window * list2;
 	int c2;
@@ -220,7 +221,7 @@ void compute_globalization (short *data,int count, int channels, window * loc , 
 
 	for (int s = 0 ; s < count ; s++)
 	{
-		search_for_s_in_loc(data ,s ,loc ,nr_loc ,list , c1);
+		search_for_s_in_loc(data ,s ,loc ,nr_loc ,list1 , c1);
 		for (int ss = 0 ; ss < count ; ss++)
 		{
 			search_for_s_in_loc(data ,ss ,loc ,nr_loc ,list2 , c2);
@@ -229,9 +230,9 @@ void compute_globalization (short *data,int count, int channels, window * loc , 
 			for (int o = 0 ; o <c1; o++  ) //list
 				for (int p = 0 ; p <c2 ; p++) //list 2
 				{
-					if (list[o].begin == list2[p].begin && list[o].end == list2[p].end)
+					if (list1[o].begin == list2[p].begin && list1[o].end == list2[p].end)
 					{
-						l[contor] = list[o];
+						l[contor] = list1[o];
 						contor++;
 					}
 				}

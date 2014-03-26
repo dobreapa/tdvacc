@@ -213,3 +213,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+*.wav
+Audio/output_nr.wav
+*.wav
+*.wav
+Audio/outfile_aa.wav
+Audio/output_nr.wav

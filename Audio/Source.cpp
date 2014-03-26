@@ -47,6 +47,10 @@ int main (void)
 	int nr_loc;
 	loc = (window *)malloc (in_frames * sizeof(window) );
 
+	window *glob;
+	int nr_glob;
+	glob = (window *)malloc (in_frames * sizeof(window) );
+
 	for (int i = 0 ; i < in_frames ; i++)
 	{
 		mean[i] = 0;
@@ -69,68 +73,36 @@ int main (void)
         return  1 ;
         } ;
 
-/* /////////////////////////Localization/////////////////////////*/
+
 	clock_t t;
-	t = clock();
+	
 	/* While there are samples in the input file, read them and process them */
 	while ((readcount = sf_readf_short (infile, data, in_frames)))
     {   
+		t = clock();
+		/** Localization **/
 		compute_localization (data, readcount, sfinfo.channels , mean , st_dev, loc , nr_loc) ;
+		t = clock() - t;
+		printf ("Compute time for localization : %.2f seconds\n",((float)t)/CLOCKS_PER_SEC);
 
+		t = clock();
+		/** Globalization **/
+		compute_globalization (data, readcount, sfinfo.channels,  loc ,nr_loc, glob , nr_glob);
+		t = clock() - t;
+		printf ("Compute time for Globalization : %.4f seconds\n",((float)t)/CLOCKS_PER_SEC);
+		
+
+		t = clock();
 		/** Median Filter **/
 		medianfilter(data, readcount, sfinfo.channels , loc , nr_loc);
 		sf_writef_short (outfile_nr, data, readcount) ;
+		t = clock() - t;
+		printf ("Compute time for Globalization : %.4f seconds\n",((float)t)/CLOCKS_PER_SEC);
+
     } ;
 
-	for(int i=0; i<nr_loc; i++){
-		print_w(loc[i]);
-	}
-
-	t = clock() - t;
-	printf ("Compute time for localization : %.2f seconds\n",((float)t)/CLOCKS_PER_SEC);
-		
-	/*for (int i = 0 ; i < 10 ; i++)//Verificare localization
-		print_w(loc[i]);*/
-
-
-/* /////////////////////////End Localization/////////////////////////*/
-
-
-
-/* /////////////////////////Noise reduction/////////////////////////*/
-
-	t = clock();
 	
-    /* While there are samples in the input file, read them ,process them and write the result in output*/
-	//while ((readcount = sf_readf_short (infile, data, in_frames)))
-    //{   
-		//compute_noise_reduction(data, readcount, sfinfo.channels , loc , nr_loc) ;
-		
-    //} ;
-
-	t = clock() - t;
-	printf ("Compute time for Noise reduction : %.4f seconds\n",((float)t)/CLOCKS_PER_SEC);
-
-/* /////////////////////////End Noise reduction/////////////////////////*/
-
-
-
-/* /////////////////////////Adaptive amplification/////////////////////////*/
-	t = clock();
 	
-    /* While there are samples in the input file, read them, process them and write the result in output*/
-	while ((readcount = sf_readf_short (infile, data, in_frames)))
-    {   
-		compute_adaptive_amplification (data, readcount, sfinfo.channels , loc , nr_loc) ;
-		sf_writef_short (outfile_aa, data, readcount) ;
-        } ;
-
-	t = clock() - t;
-	printf ("Compute time for Adaptive amplification : %.4f seconds\n",((float)t)/CLOCKS_PER_SEC);
-
-/* /////////////////////////End Adaptive amplification/////////////////////////*/
-
-
 
     /* Close input and output files. */
     sf_close (infile) ;
