@@ -116,6 +116,27 @@ window create_window_from_seed (int seed)
 }
 
 
+/*	Search for signal s in localization windows	*/
+void search_for_s_in_loc(short *data ,int s , window * loc ,int nr_loc , window * rezult , int &contor)
+{
+	int c = 0;
+
+	for (int w = 0 ; w < nr_loc ; w++)//loc
+	{
+		for (int i = loc[w].begin ; i < loc[w].end ; i++)//data in loc
+		{
+			if (data[s] == data[i])
+			{
+				rezult[c] = loc[w];
+				c++;
+			}
+		}
+	}
+
+	contor = c;
+}
+
+
 /*	Compute localization windows for given data	*/
 void compute_localization (short *data,int count, int channels , double * mean , double * st_dev , window * loc , int & nr_loc)
 {   
@@ -178,3 +199,61 @@ void compute_localization (short *data,int count, int channels , double * mean ,
 	printf ("\t\t compute_localization end\n");
 	return ;
 } /* compute_localization */
+
+/*	Compute localization windows for given data	*/
+void compute_globalization (short *data,int count, int channels, window * loc , int & nr_loc, window * glob , int & nr_glob)
+{
+	printf ("\t\t compute_globalization begin\n");
+
+
+	window * l;
+	int cl;
+	l = 	(window *)malloc (nr_loc * sizeof(window) );
+
+	window * list;
+	int c1;
+	list = 	(window *)malloc (nr_loc * sizeof(window) );
+
+	window * list2;
+	int c2;
+	list2 = 	(window *)malloc (nr_loc * sizeof(window) );
+
+	for (int s = 0 ; s < count ; s++)
+	{
+		search_for_s_in_loc(data ,s ,loc ,nr_loc ,list , c1);
+		for (int ss = 0 ; ss < count ; ss++)
+		{
+			search_for_s_in_loc(data ,ss ,loc ,nr_loc ,list2 , c2);
+
+			int contor= 0;
+			for (int o = 0 ; o <c1; o++  ) //list
+				for (int p = 0 ; p <c2 ; p++) //list 2
+				{
+					if (list[o].begin == list2[p].begin && list[o].end == list2[p].end)
+					{
+						l[contor] = list[o];
+						contor++;
+					}
+				}
+
+			int max = INT_MIN;
+			window max_w;
+			for (int x = 0 ; x <contor; x++  ) //l
+			{
+				
+				if (max > l[x].sd)
+				{
+					max = l[x].sd;
+					max_w = l[x];
+				}
+
+				glob[s] = max_w;
+			}
+		}
+
+		free(l);
+	}
+
+	printf ("\t\t compute_globalization end\n");
+	return;
+}
