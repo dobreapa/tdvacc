@@ -1,5 +1,5 @@
 #include "adaptiveAmplification.h"
-#include "localizationGlobalization.h"
+#include "window.h"
 
 #include <stdio.h>
 

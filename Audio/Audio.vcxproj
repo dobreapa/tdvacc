@@ -154,6 +154,7 @@
     <ClInclude Include="adaptiveAmplification.h" />
     <ClInclude Include="localizationGlobalization.h" />
     <ClInclude Include="noiseReduction.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

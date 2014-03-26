@@ -75,33 +75,33 @@ int main (void)
 
 
 	clock_t t;
-	
 	/* While there are samples in the input file, read them and process them */
 	while ((readcount = sf_readf_short (infile, data, in_frames)))
     {   
-		t = clock();
+		
 		/** Localization **/
+		t = clock();
 		compute_localization (data, readcount, sfinfo.channels , mean , st_dev, loc , nr_loc) ;
 		t = clock() - t;
-		printf ("Compute time for localization : %.2f seconds\n",((float)t)/CLOCKS_PER_SEC);
-
-		t = clock();
-		/** Globalization **/
-		compute_globalization (data, readcount, sfinfo.channels,  loc ,nr_loc, glob , nr_glob);
-		t = clock() - t;
-		printf ("Compute time for Globalization : %.4f seconds\n",((float)t)/CLOCKS_PER_SEC);
+		printf ("Compute time for Localization : %.2f seconds\n",((float)t)/CLOCKS_PER_SEC);
 		
-
+		
+		/** Globalization **/
 		t = clock();
+		//compute_globalization (data, readcount, sfinfo.channels,  loc ,nr_loc, glob , nr_glob);
+		t = clock() - t;
+		printf ("Compute time for Globalization : %.2f seconds\n",((float)t)/CLOCKS_PER_SEC);
+		
+		
 		/** Median Filter **/
+		t = clock();
 		medianfilter(data, readcount, sfinfo.channels , loc , nr_loc);
 		sf_writef_short (outfile_nr, data, readcount) ;
 		t = clock() - t;
-		printf ("Compute time for Globalization : %.4f seconds\n",((float)t)/CLOCKS_PER_SEC);
+		printf ("Compute time for Median Filter : %.2f seconds\n",((float)t)/CLOCKS_PER_SEC);
 
     } ;
 
-	
 	
 
     /* Close input and output files. */
