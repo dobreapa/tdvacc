@@ -52,10 +52,10 @@ void medianfilter(short *data, int count, int channels , window * loc ,  int & n
 	   //sortare
 	   qsort(aux, loc[i].end - loc[i].begin, sizeof(short), cmpfunc);
 	   
-	   int size = (int)((loc[i].end - loc[i].begin) / 1600);
+	   int size = (int)((loc[i].end - loc[i].begin) / 8);
 	   
 	   short max = (short)aux[size];
-	   short min = (short)aux[size*1659];
+	   short min = (short)aux[size*7];
 	   
 	   
 

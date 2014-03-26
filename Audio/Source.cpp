@@ -79,7 +79,7 @@ int main (void)
 
 		/** Median Filter **/
 		medianfilter(data, readcount, sfinfo.channels , loc , nr_loc);
-		sf_writef_short (outfile_nr, data, readcount) ;
+		//sf_writef_short (outfile_nr, data, readcount) ;
     } ;
 
 	for(int i=0; i<nr_loc; i++){
